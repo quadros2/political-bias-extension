@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "Bias Extension",
+  "description": "Identifies the politcal bias of the current webpage",
+  "version": "1.0",
+  "action": {
+    "default_popup": "extension.html"
+  },
+  "permissions": [
+    "activeTab"
+  ]
+}
