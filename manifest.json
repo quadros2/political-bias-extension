@@ -1,12 +1,15 @@
 {
-  "manifest_version": 3,
-  "name": "Bias Extension",
-  "description": "Identifies the politcal bias of the current webpage",
-  "version": "1.0",
-  "action": {
-    "default_popup": "extension.html"
-  },
+  "manifest_version": 2,
+  "name": "Political Bias Extension",
+  "description": "Identifies the politcal bias of a given news article",
+  "version": "0.1",
   "permissions": [
-    "activeTab"
-  ]
+    "tabs",
+    "<all_urls>"
+  ],
+  "browser_action": {
+     "default_icon": "icon.png",
+     "default_popup": "popup.html"
+  }
 }
+
