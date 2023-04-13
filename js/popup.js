@@ -11,7 +11,17 @@ function extract_hostname(url) {
     return a.hostname;
 }
 
+function highlightSelectedText() {
+    chrome.tabs.executeScript({
+        code: "window.getSelection().toString();"
+    }, function(selection) {
+        var selectedText = selection[0];
+        document.getElementById("de-biaser-input").value = selectedText;
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function () {
+    highlightSelectedText();
     this.clickbait_display = document.getElementById('clickbait-display');
     chrome.tabs.query({
         active: true
