@@ -22,33 +22,37 @@ from chatgpt_wrapper import OpenAIAPI
 app = Flask(__name__)
 CORS(app)
 
-models = {
-    'detection': None,
-    'chatgpt': None
-}
-
 def setup_model(model_name, **kwargs):
+    model = None
     if model_name == "detection":
         tokenizer_name = kwargs.get("tokenizer_name", "bert-base-cased")
         model_name = kwargs.get("model_name", "bucketresearch/politicalBiasBERT")
         device = kwargs.get("device", "cpu")
 
-        models[model_name] = (
+        model = (
             get_model(model_name, device),
             get_tokenizer(tokenizer_name)
         )
     
     elif model_name == "chatgpt":
-        api_key_file = kwargs.get("api_key_file", "secret.key")
+        api_key_file = kwargs.get("api_key_file", "api/secret.key")
         with open(api_key_file, "r") as f:
             api_key = f.readline().strip()
+
+            if not len(api_key):
+                return None
+
             os.environ["OPENAI_API_KEY"] = api_key
 
         bot = OpenAIAPI()
-        models[model_name] = bot
+        model = bot
 
-    return
+    return model
 
+models = {
+    'detection': setup_model('detection'),
+    'chatgpt': setup_model('chatgpt'),
+}
 
 @app.route('/detection', methods=['GET', 'POST'])
 def detect_bias_endpoint(): 
@@ -82,7 +86,7 @@ def explain_bias_endpoint():
             data = json.loads(data.decode("utf-8"))
 
             # TODO(): get prompt for explanation
-            explainability_prompt = get_explainability_prompt()
+            explainability_prompt = get_explainability_prompt(data)
             success, explanation, message = models['chatgpt'].ask(explainability_prompt)
             if not success:
                 return message
@@ -109,7 +113,7 @@ def debias_endpoint():
             data = json.loads(data.decode("utf-8"))
 
             # TODO(): get prompt for debiasing
-            debiasing_prompt = get_debiasing_prompt()
+            debiasing_prompt = get_debiasing_prompt(data)
             success, debiased, message = models['chatgpt'].ask(debiasing_prompt)
             if not success:
                 return message

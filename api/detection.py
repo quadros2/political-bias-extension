@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
@@ -13,6 +14,5 @@ def get_model(model_name, device="cuda"):
 def detect_bias(text, model, tokenizer):
     inputs = tokenizer(text, return_tensors="pt")
     outputs = model(**inputs)
-    _, logits = outputs[:2]
 
-    return nn.Softmax(logits)
+    return F.softmax(outputs.logits, dim=0).detach().tolist()
