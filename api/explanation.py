@@ -30,12 +30,3 @@ def explaination(data):
 
     return postprocess_explaination(response)
 
-
-data = {
-    'bias': 'left',
-    'url': 'https://www.cnn.com/2023/04/14/politics/nra-convention-republican-2024-presidential-race/index.html'
-}
-
-out = explaination(data)
-
-print(out)
