@@ -18,15 +18,15 @@ def postprocess_explaination(explain):
     return output
 
 
-def explaination(data):
-    bot = ChatGPT()
-    print(data)
-    prompt = get_explainability_prompt(data)
-    print(prompt)
-    ok, response, _ = bot.ask(prompt)
-    print(response)
+# def explaination(data):
+#     bot = ChatGPT()
+#     print(data)
+#     prompt = get_explainability_prompt(data)
+#     print(prompt)
+#     ok, response, _ = bot.ask(prompt)
+#     print(response)
 
-    bot._shutdown()
+#     bot._shutdown()
 
-    return postprocess_explaination(response)
+#     return postprocess_explaination(response)
 
