@@ -22,6 +22,26 @@ function highlightSelectedText() {
 
 document.addEventListener('DOMContentLoaded', function () {
     highlightSelectedText();
+    document.getElementById("de-biaser-button").addEventListener("click", function() {
+        var inputText = document.getElementById("de-biaser-input").value;
+        fetch('http://localhost:5000/detection', {
+            method: 'POST',
+            body: JSON.stringify({text: inputText}),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Failed to send text data to detection endpoint.');
+            }
+        })
+        .then(data => {
+            document.getElementById("de-biaser-output").value = data.debiased
+        })
+    });
     this.clickbait_display = document.getElementById('clickbait-display');
     chrome.tabs.query({
         active: true
@@ -223,25 +243,4 @@ document.addEventListener('DOMContentLoaded', function () {
 //        xhr.send();
     });
 
-});
-
-document.getElementById("de-biaser-button").addEventListener("click", function() {
-    var inputText = document.getElementById("de-biaser-input").val();
-    fetch('http://localhost:5000/detection', {
-        method: 'POST',
-        body: JSON.stringify({text: inputText}),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => {
-        if (response.ok) {
-            return response.json();
-        } else {
-            throw new Error('Failed to send text data to detection endpoint.');
-        }
-    })
-    .then(data => {
-        document.getElementById("de-biaser-output").value = data.debiased
-    })
 });
