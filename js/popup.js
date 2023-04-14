@@ -61,6 +61,8 @@ document.addEventListener('DOMContentLoaded', function () {
         var clickbait_prompt = document.getElementById("clickbait-prompt");
         var profile_prompt = document.getElementById("profile-prompt");
 
+        var explanation1_display = document.getElementById("explanation1-display");
+
         var claimReview_display = document.getElementById("claimReviewDisplay");
 
         domain_display.innerHTML = page_domain;
@@ -82,6 +84,62 @@ document.addEventListener('DOMContentLoaded', function () {
                        "hoax_image_search": [],
                        "success": true
                    }
+
+        // POST request to detection endpoint
+        fetch('http://localhost:5000/detection', {
+            method: 'POST',
+            body: JSON.stringify({text: json.article_title}),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Failed to send text data to detection endpoint.');
+            }
+        })
+        .then(data => {
+            var bias = Object.values(data.bias)[0]
+
+            // use logits to figure out bias
+            if (bias[0] > bias[1] && bias[0] > bias[2]) {
+                var clickbait = "LEFT-WING"
+            } else if (bias[2] > bias[1] && bias[2] > bias[0]) {
+                var clickbait = "RIGHT-WING"
+            } else {
+                var clickbait = "MODERATE"
+            }    
+
+            // set relevant components to reflect bias
+            clickbait_display.innerHTML = clickbait;
+            if (clickbait == "RIGHT-WING") {
+                clickbait_prompt.innerHTML = "The article seems to be politically biased towards the right wing."
+                try {
+                    clickbait_display.classList.remove("badge-primary");
+                } catch (err) {
+                    console.log(err)
+                } finally {
+                    clickbait_display.classList.add("badge-danger");
+                }
+            } else {
+                clickbait_prompt.innerHTML = "The article seems to be politically biased towards the left wing."
+                try {
+                    clickbait_display.classList.remove("badge-danger");
+                } catch (err) {
+                    console.log(err)
+                } finally {
+                    clickbait_display.classList.add("badge-primary");
+                }
+            }
+        })
+        .catch(error => {
+            console.error(error);
+        });
+
+        // var clickbait = clickbait_display.innerHTML;
+        // explanation1_display.innerHTML = clickbait;
 
 //        xhr.open('POST', 'http://35.185.181.66:5000/predict?article_url=' + tab.url.toString(), true);
 //        xhr.onload = function () {
@@ -119,26 +177,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
             // clickbait
-            clickbait_display.innerHTML = json.clickbait;
-            if (json.clickbait == "RIGHT-WING") {
-                clickbait_prompt.innerHTML = "The article seems to be politically biased towards the right wing."
-                try {
-                    clickbait_display.classList.remove("badge-primary");
-                } catch (err) {
-                    console.log(err)
-                } finally {
-                    clickbait_display.classList.add("badge-danger");
-                }
-            } else {
-                clickbait_prompt.innerHTML = "The article seems to be politically biased towards the left wing."
-                try {
-                    clickbait_display.classList.remove("badge-danger");
-                } catch (err) {
-                    console.log(err)
-                } finally {
-                    clickbait_display.classList.add("badge-primary");
-                }
-            }
+            
 
 //            // article style (profile)
 //            profile_display.innerHTML = json.article_profile;

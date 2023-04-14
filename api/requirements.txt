@@ -1,0 +1,5 @@
+torch
+transformers
+flask
+flask_cors
+git+https://github.com/mmabrouk/chatgpt-wrapper
